@@ -20,13 +20,17 @@ def main(data_folder_name):
     # config files for the agents
     rescuer_file = os.path.join(data_folder, "rescuer_config.txt")
     explorer_file = os.path.join(data_folder, "explorer_config.txt")
+
+    explorer2_file = os.path.join(data_folder, "explorer2_config.txt")
     
     # Instantiate agents rescuer and explorer
     resc = Rescuer(env, rescuer_file)
+    resc2 = Rescuer(env, rescuer_file)
 
     # Explorer needs to know rescuer to send the map
     # that's why rescuer is instatiated before
     exp = Explorer(env, explorer_file, resc)
+    exp2 = Explorer(env, explorer2_file, resc2)
 
     # Run the environment simulator
     env.run()
