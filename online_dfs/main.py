@@ -8,6 +8,9 @@ from explorer import Explorer
 from rescuer import Rescuer
 from map import Map
 
+
+
+
 def main(data_folder_name):
    
     # Set the path to config files and data files for the environment

@@ -12,6 +12,8 @@ from abc import ABC, abstractmethod
 from vs.abstract_agent import AbstAgent
 from vs.constants import VS
 from map import Map
+from resultAction import ResultAction
+from colorama import Fore
 
 class Stack:
     def __init__(self):
@@ -45,10 +47,12 @@ class Explorer(AbstAgent):
         self.map = map           # create a map for representing the environment
         self.victims = {}          # a dictionary of found victims: (seq): ((x,y), [<vs>])
                                    # the key is the seq number of the victim,(x,y) the position, <vs> the list of vital signals
+        self.resultActions = ResultAction()
 
         # put the current position - the base - in the map
         self.map.add((self.x, self.y), 1, VS.NO_VICTIM, self.check_walls_and_lim())
-
+    
+        
     def get_next_position(self):
         """ Randomically, gets the next position that can be explored (no wall and inside the grid)
             There must be at least one CLEAR position in the neighborhood, otherwise it loops forever.
@@ -59,10 +63,45 @@ class Explorer(AbstAgent):
         # Loop until a CLEAR position is found
         while True:
             # Get a random direction
-            direction = random.randint(0, 7)
-            # Check if the corresponding position in walls_and_lim is CLEAR
-            if obstacles[direction] == VS.CLEAR:
-                return Explorer.AC_INCR[direction]
+            #direction = random.randint(0, 7)
+
+            # se a posição atual não existe na matriz de ações 
+            if not( self.resultActions.in_map((self.x, self.y))):
+                self.resultActions.add((self.x,self.y)) 
+
+            for direction in range(0,7):
+                # verifica se a direção é válida para andar
+                if obstacles[direction] == VS.CLEAR:
+
+                    dx, dy = Explorer.AC_INCR[direction]
+                    considered_position = (self.x + dx, self.y + dy)
+                    
+                    print(f"considered position {considered_position}" )                                       
+
+                    # atualiza o resultado da ação pela direção escolhida (atualiza mesmo que não ande efetivamente)
+                    
+                    if (self.resultActions.get((self.x, self.y))[direction] == (-1,-1) ):
+                        self.resultActions.update((self.x, self.y), direction, considered_position)    
+                        return Explorer.AC_INCR[direction]    
+
+                    # se a direção escolhida ainda não foi tentada
+                    #if (self.resultActions.get((self.x, self.y))[direction] == (-1, -1) ):
+                        
+                    # se não, continua iterando o for
+                    
+                    # em caso de tentar voltar a uma posição ja visitada, verifica se ainda existem ações não tentadas nela                    
+                    if ( self.resultActions.in_map(considered_position)):
+                        if ((-1,-1) in self.resultActions.get(considered_position) and not (-1,-1) in self.resultActions.get((self.x, self.y))):
+                            return Explorer.AC_INCR[direction]
+                        else:
+                            print(Fore.GREEN + f"No more actions in: {considered_position}")
+                                        
+                
+                # consideramos que "bateu" e guardamos esse resultado
+                else:                                     
+                    
+                    self.resultActions.update((self.x, self.y), direction, VS.WALL)
+                    print( Fore.RED + f"{self.resultActions.get((self.x,self.y))}") 
         
     def explore(self):
         # get an random increment for x and y       
@@ -110,6 +149,7 @@ class Explorer(AbstAgent):
 
         return
 
+    # volta pelo mesmo caminho que andou
     def come_back(self):
         dx, dy = self.walk_stack.pop()
         dx = dx * -1
@@ -131,6 +171,7 @@ class Explorer(AbstAgent):
         method at each cycle. Must be implemented in every agent"""
 
         if self.get_rtime() > self.time_to_comeback:
+            tecla = input(">>> ")
             self.explore()
             return True
         else:
