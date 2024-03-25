@@ -61,15 +61,14 @@ class Explorer(AbstAgent):
         obstacles = self.check_walls_and_lim()        
     
         # Loop until a CLEAR position is found
-        while True:
-            # Get a random direction
-            #direction = random.randint(0, 7)
+        while True:            
 
             # se a posição atual não existe na matriz de ações 
             if not( self.resultActions.in_map((self.x, self.y))):
                 self.resultActions.add((self.x,self.y)) 
 
             for direction in range(0,7):
+
                 # verifica se a direção é válida para andar
                 if obstacles[direction] == VS.CLEAR:
 
@@ -157,33 +156,34 @@ class Explorer(AbstAgent):
 
         result = self.walk(dx, dy)
         if result == VS.BUMPED:
-            print(self.OUTPUT_COLOR + f"{self.NAME}: when coming back bumped at ({self.x+dx}, {self.y+dy}) , rtime: {self.get_rtime()}")
+            print(f"{self.NAME}: when coming back bumped at ({self.x+dx}, {self.y+dy}) , rtime: {self.get_rtime()}")
             return
         
         if result == VS.EXECUTED:
             # update the agent's position relative to the origin
             self.x += dx
             self.y += dy
-            print(self.OUTPUT_COLOR + f"{self.NAME}: coming back at ({self.x}, {self.y}), rtime: {self.get_rtime()}")
+            #print(f"{self.NAME}: coming back at ({self.x}, {self.y}), rtime: {self.get_rtime()}")
         
     def deliberate(self) -> bool:
         """ The agent chooses the next action. The simulator calls this
         method at each cycle. Must be implemented in every agent"""
 
-        if self.get_rtime() > self.time_to_comeback:
-            tecla = input(">>> ")
+        consumed_time = self.TLIM - self.get_rtime()
+        if consumed_time < self.get_rtime():
+            #tecla = input(">> ")
             self.explore()
             return True
-        else:
-            # time to come back to the base
-            if self.walk_stack.is_empty():
-                # time to wake up the rescuer
-                # pass the walls and the victims (here, they're empty)
-                print(self.OUTPUT_COLOR + f"{self.NAME}: rtime {self.get_rtime()}, invoking the rescuer")
-                input(self.OUTPUT_COLOR + f"{self.NAME}: type [ENTER] to proceed")
-                self.resc.go_save_victims(self.map, self.victims)
-                return False
-            else:
-                self.come_back()
-                return True
+
+        # time to come back to the base
+        if self.walk_stack.is_empty() or (self.x == 0 and self.y == 0):
+            # time to wake up the rescuer
+            # pass the walls and the victims (here, they're empty)
+            print(f"{self.NAME}: rtime {self.get_rtime()}, invoking the rescuer")
+            #input(f"{self.NAME}: type [ENTER] to proceed")
+            self.resc.go_save_victims(self.map, self.victims)
+            return False
+
+        self.come_back()
+        return True
 
