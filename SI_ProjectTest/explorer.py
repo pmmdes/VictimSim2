@@ -22,14 +22,44 @@ class Explorer(AbstAgent):
         self.x = 0
         self.y = 0
         
+        ## Primeira tentativa
+        #if seq == 1:
+        #    self.sequence = [0, 1, 2, 3, 4, 5, 6, 7] 
+        #elif seq == 2:
+        #    self.sequence = [7, 6, 5, 4, 3, 2, 1, 0]
+        #elif seq == 3:
+        #    self.sequence = [3, 2, 1, 0, 7, 6, 5, 4]
+        #elif seq == 4:
+        #    self.sequence = [5, 4, 3, 2, 1, 0, 7, 6]
+
+        #if seq == 1:
+        #    self.sequence = [3, 6, 1, 4, 7, 2, 5, 0]
+        #elif seq == 2:
+        #    self.sequence = [7, 2, 5, 0, 3, 6, 1, 4]
+        #elif seq == 3:
+        #    self.sequence = [1, 6, 3, 0, 5, 2, 7, 4]
+        #elif seq == 4:
+        #    self.sequence = [5, 2, 7, 4, 1, 6, 3, 0]
+
+        # Neste código tem um problema q trava o agente 4 na posição inicial no terceiro mapa    
+        #if seq == 1:
+        #    self.sequence = [3, 6, 1, 4, 7, 2, 5, 0]
+        #elif seq == 2:
+        #    self.sequence = [7, 2, 5, 0, 3, 6, 1, 4]
+        #elif seq == 3:
+        #    self.sequence = [1, 4, 7, 2, 5, 0, 3, 6]
+        #elif seq == 4:
+        #    self.sequence = [5, 0, 3, 6, 1, 4, 7, 2]
+        
+        # Agente 4 n fica travado, mas no quarto mapa perde 2 vitimas
         if seq == 1:
-            self.sequence = [0, 1, 2, 3, 4, 5, 6, 7] 
+            self.sequence = [3, 6, 1, 4, 7, 2, 5, 0]
         elif seq == 2:
-            self.sequence = [7, 6, 5, 4, 3, 2, 1, 0]
+            self.sequence = [7, 2, 5, 0, 3, 6, 1, 4]
         elif seq == 3:
-            self.sequence = [3, 2, 1, 0, 7, 6, 5, 4]
+            self.sequence = [1, 4, 7, 2, 5, 0, 3, 6]
         elif seq == 4:
-            self.sequence = [5, 4, 3, 2, 1, 0, 7, 6]
+            self.sequence = [5, 2, 7, 4, 1, 6, 3, 0]
         """
         AC_INCR = {
         0: (0, -1),  #  u: Up
