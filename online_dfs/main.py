@@ -8,9 +8,6 @@ from explorer import Explorer
 from rescuer import Rescuer
 from map import Map
 
-
-
-
 def main(data_folder_name):
    
     # Set the path to config files and data files for the environment
@@ -23,9 +20,11 @@ def main(data_folder_name):
     
     # config files for the agents
     rescuer_file = os.path.join(data_folder, "rescuer_config.txt")
-    explorer_file = os.path.join(data_folder, "explorer_config.txt")
 
-    explorer2_file = os.path.join(data_folder, "explorer2_config.txt")
+    explorer_file = os.path.join(data_folder, "explorer_config.txt")
+    explorer2_file = os.path.join(data_folder, "explorer_config2.txt")
+    explorer3_file = os.path.join(data_folder, "explorer_config3.txt")
+    explorer4_file = os.path.join(data_folder, "explorer_config4.txt")
     
     # Instantiate agents rescuer and explorer
     resc = Rescuer(env, rescuer_file)
@@ -36,10 +35,10 @@ def main(data_folder_name):
 
     map = Map() 
 
-    exp = Explorer(env, explorer_file, resc, map)
-    #exp2 = Explorer(env, explorer2_file, resc2, map)
-
-    
+    exp = Explorer(env, explorer_file, resc, map, "U")
+    exp2 = Explorer(env, explorer2_file, resc, map, "R")
+    exp3 = Explorer(env, explorer3_file, resc, map, "D")
+    exp4 = Explorer(env, explorer4_file, resc, map, "L")    
 
     # Run the environment simulator
     env.run()

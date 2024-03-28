@@ -30,7 +30,7 @@ class Stack:
         return len(self.items) == 0
 
 class Explorer(AbstAgent):
-    def __init__(self, env, config_file, resc, map):
+    def __init__(self, env, config_file, resc, map, type):
         """ Construtor do agente random on-line
         @param env: a reference to the environment 
         @param config_file: the absolute path to the explorer's config file
@@ -47,8 +47,12 @@ class Explorer(AbstAgent):
         self.map = map           # create a map for representing the environment
         self.victims = {}          # a dictionary of found victims: (seq): ((x,y), [<vs>])
                                    # the key is the seq number of the victim,(x,y) the position, <vs> the list of vital signals
+
         self.resultActions = ResultAction()
         self.lastMove = (0,0)
+        self.type = type
+
+
 
         # put the current position - the base - in the map
         self.map.add((self.x, self.y), 1, VS.NO_VICTIM, self.check_walls_and_lim())
@@ -62,15 +66,13 @@ class Explorer(AbstAgent):
         obstacles = self.check_walls_and_lim()        
     
         # Loop until a CLEAR position is found
-        while True:            
+        while True:
 
             # se a posição atual não existe no dicionário de ações
             if not( self.resultActions.in_map((self.x, self.y))):
-                self.resultActions.add((self.x,self.y)) 
-
+                self.resultActions.add((self.x,self.y))            
             
-            
-            print(self.resultActions.get((self.x, self.y)).index((-1,-1)))
+            #print(self.resultActions.get((self.x, self.y)).index((-1,-1)))
 
             # verifica se há direção nao explorada
             try:
@@ -78,13 +80,13 @@ class Explorer(AbstAgent):
             except ValueError:
                 dx, dy = self.lastMove
                 dx = dx * -1
-                dy = dy * -1
-                return Explorer.AC_INCR[Explorer.AC_INCR.values().index((dx,dy))]            
+                dy = dy * -1                
+                return Explorer.ac_incr(self.type)[ list(Explorer.ac_incr(self.type).values()).index((dx,dy)) ]            
 
             # verifica se a direção é válida para andar
             if obstacles[direction] == VS.CLEAR:
 
-                dx, dy = Explorer.AC_INCR[direction]
+                dx, dy = Explorer.ac_incr(self.type)[direction]
                 considered_position = (self.x + dx, self.y + dy)
                 
                 print(f"considered position {considered_position}" )                                       
@@ -95,24 +97,22 @@ class Explorer(AbstAgent):
                     # atualiza o índice da direção com a coordenada resultante da ação 
                     self.resultActions.update((self.x, self.y), direction, considered_position)    
                     # explora
-                    self.lastMove = Explorer.AC_INCR[direction]
-                    return Explorer.AC_INCR[direction]                    
+                    self.lastMove = Explorer.ac_incr(self.type)[direction]
+                    return Explorer.ac_incr(self.type)[direction]                    
                 
                 # em caso de tentar voltar a uma posição ja visitada, verifica se ainda existem ações não tentadas nela                    
                 if ( self.resultActions.in_map(considered_position) ):
                     if ((-1,-1) in self.resultActions.get(considered_position) and (-1,-1) not in self.resultActions.get((self.x, self.y))):
-                        self.lastMove = Explorer.AC_INCR[direction]
-                        return Explorer.AC_INCR[direction]
-                    else:
-                        print(Fore.GREEN + f"No more actions in: {considered_position}")
+                        self.lastMove = Explorer.ac_incr(self.type)[direction]
+                        return Explorer.ac_incr(self.type)[direction]
+                    #else:
+                        #print(Fore.GREEN + f"No more actions in: {considered_position}")
 
             
             # consideramos que "bateu" e guardamos esse resultado
             else:                   
                 self.resultActions.update((self.x, self.y), direction, VS.WALL)
-                print( Fore.RED + f"{self.resultActions.get((self.x,self.y))}")
-
-            
+                #print( Fore.RED + f"{self.resultActions.get((self.x,self.y))}")            
                 
         
     def explore(self):
@@ -194,7 +194,7 @@ class Explorer(AbstAgent):
             # pass the walls and the victims (here, they're empty)
             print(f"{self.NAME}: rtime {self.get_rtime()}, invoking the rescuer")
             #input(f"{self.NAME}: type [ENTER] to proceed")
-            self.resc.go_save_victims(self.map, self.victims)
+            #self.resc.go_save_victims(self.map, self.victims)
             return False
 
         self.come_back()

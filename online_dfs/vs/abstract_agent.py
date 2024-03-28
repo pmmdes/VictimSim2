@@ -25,6 +25,53 @@ class AbstAgent:
         6: (-1, 0),  #  l: Left
         7: (-1, -1)  # ul: Up left diagonal
     }
+
+    # define a ordem de exploração de cada tipo de agente
+    def ac_incr(agent_type):
+        if(agent_type == "U"):
+            return {
+            0: (0, -1),  #  u: Up
+            1: (1, -1),  # ur: Upper right diagonal
+            2: (1, 0),   #  r: Right
+            3: (1, 1),   # dr: Down right diagonal
+            4: (0, 1),   #  d: Down
+            5: (-1, 1),  # dl: Down left left diagonal
+            6: (-1, 0),  #  l: Left
+            7: (-1, -1)  # ul: Up left diagonal
+            }
+        elif(agent_type == "R"):
+            return {            
+            0: (1, 0),   #  r: Right
+            1: (1, 1),   # dr: Down right diagonal
+            2: (0, 1),   #  d: Down
+            3: (-1, 1),  # dl: Down left left diagonal
+            4: (-1, 0),  #  l: Left
+            5: (-1, -1),  # ul: Up left diagonal
+            6: (0, -1),  #  u: Up
+            7: (1, -1),  # ur: Upper right diagonal
+            }
+        elif(agent_type == "D"):
+            return {            
+            0: (0, 1),   #  d: Down
+            1: (-1, 1),  # dl: Down left left diagonal
+            2: (-1, 0),  #  l: Left
+            3: (-1, -1),  # ul: Up left diagonal
+            4: (0, -1),  #  u: Up
+            5: (1, -1),  # ur: Upper right diagonal
+            6: (1, 0),   #  r: Right
+            7: (1, 1),   # dr: Down right diagonal
+            }
+        else:
+            return {            
+            0: (-1, 0),  #  l: Left
+            1: (-1, -1),  # ul: Up left diagonal
+            2: (0, -1),  #  u: Up
+            3: (1, -1),  # ur: Upper right diagonal
+            4: (1, 0),   #  r: Right
+            5: (1, 1),   # dr: Down right diagonal
+            6: (0, 1),   #  d: Down
+            7: (-1, 1),  # dl: Down left left diagonal
+            }
     
     def __init__(self, env, config_file):
         """ 
